@@ -3,730 +3,216 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>In Loving Memory of Alex Phúc Nguyễn</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <title>Slideshow Kỷ Niệm</title>
     <style>
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
         }
+
         body, html {
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background-color: #fdfbf7;
-            font-family: 'Montserrat', sans-serif;
-            color: #333230;
-            -webkit-font-smoothing: antialiased;
+            background-color: #000000; /* Nền đen trang trọng */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        /* Presentation Wrapper */
-        #slideshow-container {
+        /* Vùng hiển thị Slideshow Full Toàn Màn Hình */
+        .slideshow-container {
             position: relative;
             width: 100vw;
             height: 100vh;
-            background: #faf6f0;
             display: flex;
             justify-content: center;
             align-items: center;
         }
 
-        /* Background Particle & Light Overlay Effects */
-        .ambient-glow {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at 50% 30%, rgba(255,248,230,0.4) 0%, rgba(250,240,220,0.1) 70%);
-            z-index: 2;
-            pointer-events: none;
-        }
-
-        /* Slide Structure */
+        /* Định dạng từng Slide ảnh */
         .slide {
             position: absolute;
-            top: 0; left: 0;
             width: 100%;
             height: 100%;
             opacity: 0;
-            visibility: hidden;
-            transition: opacity 2.5s ease-in-out, visibility 2.5s ease-in-out;
-            z-index: 1;
+            transition: opacity 0.5s ease-in-out; /* Hiệu ứng fade mượt mà */
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 40px;
-            background-color: #fdfbf7;
+            z-index: 1;
         }
 
         .slide.active {
             opacity: 1;
-            visibility: visible;
-            z-index: 5;
+            z-index: 2;
         }
 
-        /* Image Display Layouts */
-        .media-container {
-            position: relative;
-            width: 85%;
-            height: 65%;
-            max-width: 1100px;
-            overflow: hidden;
-            border-radius: 4px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.06);
-            background: #f7f3ed;
-            margin-bottom: 30px;
-        }
-
-        .slide-img {
+        /* Hiển thị ảnh Full Page */
+        .slide img {
             width: 100%;
             height: 100%;
-            object-fit: contain;
-            opacity: 0;
-            transform: scale(1.02);
-            transition: opacity 2s ease-in-out;
+            /* 'contain' giúp giữ nguyên vẹn khung hình và chữ của các bức ảnh thông báo. 
+               Nếu muốn ảnh tràn viền tuyệt đối bất chấp cắt góc, hãy đổi thành 'cover' */
+            object-fit: contain; 
         }
 
-        .slide.active .slide-img {
-            opacity: 1;
-            animation: kenBurnsEffect 45s forwards linear;
-        }
-
-        @keyframes kenBurnsEffect {
-            0% { transform: scale(1.01) translate(0, 0); }
-            50% { transform: scale(1.06) translate(0.5%, 0.5%); }
-            100% { transform: scale(1.02) translate(0, 0); }
-        }
-
-        /* Typography & Text Styling */
-        .text-container {
-            text-align: center;
-            max-width: 900px;
-            padding: 0 20px;
-            z-index: 10;
-        }
-
-        .slide h2 {
-            font-family: 'Playfair Display', serif;
-            font-size: 26px;
-            font-weight: 600;
-            color: #4a4540;
-            margin-bottom: 12px;
-            letter-spacing: 1px;
-            opacity: 0;
-            transform: translateY(15px);
-            transition: all 1.8s ease-out 0.5s;
-        }
-
-        .slide.active h2 {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .slide p.quote-vn {
-            font-family: 'Playfair Display', serif;
-            font-style: italic;
-            font-size: 19px;
-            color: #5e5750;
-            line-height: 1.6;
-            margin-bottom: 8px;
-            opacity: 0;
-            transform: translateY(15px);
-            transition: all 1.8s ease-out 1s;
-        }
-
-        .slide p.quote-en {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 14px;
-            font-weight: 300;
-            color: #7d756c;
-            letter-spacing: 0.5px;
-            line-height: 1.5;
-            opacity: 0;
-            transform: translateY(15px);
-            transition: all 1.8s ease-out 1.5s;
-        }
-
-        .slide.active p.quote-vn,
-        .slide.active p.quote-en {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* Title Screen Special Layout */
-        .title-slide {
-            background: linear-gradient(135deg, #fbf9f5 0%, #f5eee4 100%);
-        }
-        .title-slide h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: 46px;
-            font-weight: 400;
-            color: #3d3833;
-            margin-bottom: 15px;
-            letter-spacing: 2px;
-        }
-        .title-slide h2 {
-            font-size: 32px;
-            color: #5c544c;
-            margin-bottom: 20px;
-        }
-        .title-slide .dates {
-            font-size: 18px;
-            font-weight: 400;
-            letter-spacing: 4px;
-            color: #8c8174;
-        }
-
-        /* Final Farewell/Candle Special Layout */
-        .candle-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-        .candle {
-            width: 40px;
-            height: 80px;
-            background: linear-gradient(to bottom, #eae1d4, #dfd5c3);
-            border-radius: 4px / 8px;
-            position: relative;
-            margin-bottom: 40px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-        }
-        .flame {
-            width: 16px;
-            height: 30px;
-            background: radial-gradient(ellipse at bottom, #ffda73 0%, #ff9d26 50%, transparent 90%);
-            border-radius: 50% 50% 20% 20%;
+        /* Chữ hiển thị trên Slide - Kích thước lớn, rõ nét */
+        .caption {
             position: absolute;
-            top: -26px;
-            left: 12px;
-            animation: flicker 2s infinite ease-in-out;
-            filter: drop-shadow(0 0 10px rgba(255,180,50,0.6));
-        }
-        @keyframes flicker {
-            0%, 100% { transform: scale(1) rotate(-1deg); opacity: 0.9; }
-            50% { transform: scale(1.05) rotate(1.5deg); opacity: 1; }
-        }
-
-        /* Hidden YouTube Audio Hosts */
-        #audio-players-container {
-            position: absolute;
-            width: 1px; height: 1px;
-            opacity: 0; overflow: hidden;
-            left: -100px; top: -100px;
-        }
-
-        /* Control HUD Bar */
-        #hud-controls {
-            position: absolute;
-            bottom: 25px;
+            bottom: 8%;
             left: 50%;
             transform: translateX(-50%);
-            z-index: 100;
-            background: rgba(253, 251, 247, 0.9);
-            padding: 10px 25px;
-            border-radius: 30px;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
-            border: 1px solid rgba(220,210,195,0.5);
-            transition: opacity 0.4s ease;
-        }
-        #hud-controls:hover {
-            opacity: 1 !important;
-        }
-        .hud-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: #5c544c;
-            font-size: 14px;
-            font-weight: 500;
-            padding: 4px 10px;
-            border-radius: 4px;
-            transition: background 0.2s;
-        }
-        .hud-btn:hover {
-            background: #f0e9dc;
-        }
-        #timeline-indicator {
-            font-size: 12px;
-            color: #7d756c;
-            font-variant-numeric: tabular-nums;
+            color: #ffffff;
+            font-size: 2.8rem; /* Cỡ chữ to hơn theo yêu cầu */
+            font-weight: 600;
+            text-shadow: 2px 2px 15px rgba(0, 0, 0, 0.9), -2px -2px 15px rgba(0, 0, 0, 0.9);
+            text-align: center;
+            z-index: 10;
+            width: 85%;
+            pointer-events: none;
+            letter-spacing: 1px;
         }
 
-        /* Splash Screen overlay to trigger playback due to browser policies */
-        #start-splash {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: #faf6f0;
-            z-index: 999;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 30px;
+        /* Nút điều khiển ẩn/hiện nếu cần bấm thủ công */
+        .controls {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            z-index: 100;
+            opacity: 0.3;
+            transition: opacity 0.3s;
         }
-        #start-splash h2 {
-            font-family: 'Playfair Display', serif;
-            margin-bottom: 10px;
-            color: #3d3833;
+        .controls:hover {
+            opacity: 1;
         }
-        #start-splash p {
-            font-size: 14px;
-            color: #7d756c;
-            margin-bottom: 30px;
-            max-width: 500px;
-            line-height: 1.5;
-        }
-        .start-btn {
-            background: #4a4540;
-            color: #fff;
-            border: none;
-            padding: 12px 35px;
-            border-radius: 25px;
-            font-size: 15px;
-            letter-spacing: 1px;
+        .controls button {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.4);
+            padding: 8px 16px;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            transition: background 0.2s, transform 0.2s;
-        }
-        .start-btn:hover {
-            background: #36322e;
-            transform: translateY(-1px);
+            font-size: 1rem;
+            border-radius: 4px;
         }
     </style>
 </head>
 <body>
 
-    <!-- Splash/Trigger screen to satisfy browser auto-play requirements -->
-    <div id="start-splash">
-        <h2>In Loving Memory of Alex Phúc Nguyễn</h2>
-        <p>Bấm nút bên dưới để khởi động slide trình chiếu và tự động đồng bộ hóa toàn bộ âm nhạc và dòng thời gian từ YouTube.</p>
-        <button class="start-btn" onclick="startSlideshow()">Bắt Đầu Trình Chiếu</button>
+    <div class="slideshow-container" id="slideshow">
+        <!-- Các slide sẽ tự động được tạo và chèn vào đây bằng JavaScript bên dưới -->
     </div>
 
-    <!-- Hidden Video Player Containers for Synchronized Audio -->
-    <div id="audio-players-container">
-        <div id="player-opening"></div>
-        <div id="player-middle"></div>
-        <div id="player-close"></div>
+    <div class="controls">
+        <button onclick="togglePause()" id="btnPause">Tạm dừng</button>
     </div>
 
-    <div id="slideshow-container">
-        <div class="ambient-glow"></div>
-
-        <!-- PART 1: OPENING (0:00 - 2:00) -->
-        <!-- Slide 1: Title Screen -->
-        <div class="slide title-slide active" data-duration="15">
-            <h1>IN LOVING MEMORY</h1>
-            <h2>Alex Phúc Nguyễn</h2>
-            <div class="dates">1998 – 2026</div>
-        </div>
-
-        <!-- Slide 2: Footprints of life -->
-        <div class="slide" data-duration="30">
-            <div class="media-container">
-                <img src="phuc_36.jpg" class="slide-img" alt="Alex Phuc Nguyen">
-            </div>
-            <div class="text-container">
-                <p class="quote-vn">"Có những người chỉ xuất hiện trong cuộc đời chúng ta một khoảng thời gian ngắn, nhưng dấu ấn họ để lại sẽ ở trong tim chúng ta mãi mãi."</p>
-                <p class="quote-en">"Some people stay in our lives for only a short time, yet remain in our hearts forever."</p>
-            </div>
-        </div>
-
-        <!-- Slide 3: Childhood & Youth -->
-        <div class="slide" data-duration="45">
-            <div class="media-container">
-                <img src="phuc_07.jpg" class="slide-img" alt="Alex Phuc Nguyen">
-            </div>
-            <div class="text-container">
-                <p class="quote-vn">"Hành trình bắt đầu từ quê hương Việt Nam mang theo những ước mơ tuyệt đẹp của tuổi trẻ."</p>
-                <p class="quote-en">"A journey that began with youthful energy, beautiful dreams, and hope."</p>
-            </div>
-        </div>
-
-        <!-- Slide 4: Journey to Canada -->
-        <div class="slide" data-duration="30">
-            <div class="media-container" style="background: url('https://images.unsplash.com/photo-1534088568595-a066f410bcda?q=80&w=1200') center/cover; opacity: 0.15;">
-                <!-- Fallback decorative textured background -->
-            </div>
-            <div class="text-container">
-                <p class="quote-vn">"Em đến Canada với hy vọng học tập, làm việc chăm chỉ, và xây dựng một tương lai tốt đẹp hơn."</p>
-                <p class="quote-en">"Alex came to Canada carrying dreams, hope, and determination."</p>
-            </div>
-        </div>
-
-
-        <!-- PART 2: LIFE JOURNEY (2:00 - 6:00) -->
-        <!-- Slide 5: Academic Dedication -->
-        <div class="slide" data-duration="45">
-            <div class="media-container">
-                <img src="phuc_05.jpg" class="slide-img" alt="Saskatchewan Polytechnic">
-            </div>
-            <div class="text-container">
-                <h2>MỖI BƯỚC TIẾN MỘT ƯỚC MƠ / EVERY STEP MATTERED</h2>
-                <p class="quote-vn">"Học tập luôn là điều quan trọng đối với Phúc. Mỗi bài học, mỗi thử thách đều là một bước tiến gần hơn tới ước mơ."</p>
-            </div>
-        </div>
-
-        <!-- Slide 6: Graduation Day -->
-        <div class="slide" data-duration="45">
-            <div class="media-container">
-                <img src="phuc_06.jpg" class="slide-img" alt="Graduation Day">
-            </div>
-            <div class="text-container">
-                <h2>EVERY DREAM MATTERED</h2>
-                <p class="quote-en">"Education was important to Alex. Every achievement reflected his dedication and hard work."</p>
-            </div>
-        </div>
-
-        <!-- Slide 7: Community Connections -->
-        <div class="slide" data-duration="45">
-            <div class="media-container">
-                <img src="phuc_21.jpg" class="slide-img" alt="Community Connections">
-            </div>
-            <div class="text-container">
-                <p class="quote-vn">"Mỗi khoảnh khắc đều là một phần đẹp đẽ trong hành trình của Alex."</p>
-                <p class="quote-en">"Every friendship mattered. Every smile brightened the room."</p>
-            </div>
-        </div>
-
-        <!-- Slide 8: Shared Joy -->
-        <div class="slide" data-duration="30">
-            <div class="media-container">
-                <img src="phuc_04.jpeg" class="slide-img" alt="Shared Joy">
-            </div>
-            <div class="text-container">
-                <p class="quote-en">"His kindness made people feel welcomed. Alex was a wonderful friend."</p>
-            </div>
-        </div>
-
-        <!-- Slide 9: Lifelong Bonds -->
-        <div class="slide" data-duration="30">
-            <div class="media-container">
-                <img src="phuc_02.jpg" class="slide-img" alt="Friends">
-            </div>
-            <div class="text-container">
-                <p class="quote-en">"His friendship will forever remain in the hearts of those who knew him."</p>
-            </div>
-        </div>
-
-        <!-- Slide 10: Workplace dedication -->
-        <div class="slide" data-duration="30">
-            <div class="media-container">
-                <img src="phuc_01.jpeg" class="slide-img" alt="Workplace Dedication">
-            </div>
-            <div class="text-container">
-                <p class="quote-en">"Managers appreciated his dedication. Coworkers appreciated his kindness."</p>
-            </div>
-        </div>
-
-        <!-- Slide 11: Quiet Perseverance -->
-        <div class="slide" data-duration="15">
-            <div class="media-container">
-                <img src="phuc_03.jpeg" class="slide-img" alt="Quiet Perseverance">
-            </div>
-            <div class="text-container">
-                <p class="quote-vn">"Em xây dựng cuộc sống bằng chính đôi tay và nghị lực của mình."</p>
-                <p class="quote-en">"Moving forward with courage, building a future brick by brick."</p>
-            </div>
-        </div>
-
-
-        <!-- PART 3: FAMILY & MOTHER (6:00 - 7:00) -->
-        <!-- Slide 12: A Mother's Pride -->
-        <div class="slide" data-duration="60">
-            <div class="media-container">
-                <img src="phuc_08.jpg" class="slide-img" alt="Family and Mother">
-            </div>
-            <div class="text-container">
-                <p class="quote-vn" style="font-size: 22px; font-weight:600;">"Mẹ luôn là người tự hào nhất về Alex."</p>
-                <p class="quote-en" style="font-size: 16px; margin-bottom:15px;">"Behind every achievement, there was a mother's love."</p>
-                <p class="quote-vn" style="color: #6e655c;">"Đằng sau mỗi thành công là tình yêu thương vô điều kiện của gia đình. Đằng sau mỗi bước tiến là những hy sinh âm thầm của Ba Mẹ."</p>
-            </div>
-        </div>
-
-
-        <!-- PART 4: FINAL FAREWELL (7:00 - END) -->
-        <!-- Slide 13: A Journey Left Unfinished -->
-        <div class="slide" data-duration="30">
-            <div class="media-container">
-                <img src="phuc_06.jpg" class="slide-img" alt="In Loving Memory">
-            </div>
-            <div class="text-container">
-                <p class="quote-vn">"Dù hành trình ấy dừng lại quá sớm, nhưng những điều tốt đẹp em để lại sẽ còn mãi."</p>
-                <p class="quote-en">"Though your journey ended too soon, your smile, your warmth, and your spirit will remain with us forever."</p>
-            </div>
-        </div>
-
-        <!-- Slide 14: Eternal Remembrance -->
-        <div class="slide" data-duration="30">
-            <div class="text-container">
-                <h2 style="font-size: 36px; margin-bottom: 20px;">In Loving Memory</h2>
-                <h1 style="font-family:'Playfair Display', serif; font-size:48px; margin-bottom:20px; color:#3d3833;">Alex Phúc Nguyễn</h1>
-                <p class="quote-en" style="font-size: 18px; letter-spacing: 2px; line-height: 2;">
-                    Forever Loved.<br>
-                    Forever Remembered.<br>
-                    Forever Missed.
-                </p>
-                <p class="quote-vn" style="margin-top: 25px; letter-spacing: 3px; color:#8c8174;">1998 – 2026</p>
-            </div>
-        </div>
-
-        <!-- Slide 15: Final Scene Candle -->
-        <div class="slide candle-slide" data-duration="15">
-            <div class="candle-container">
-                <div class="candle"><div class="flame"></div></div>
-                <div class="text-container">
-                    <p class="quote-vn" style="font-size: 24px; margin-bottom: 10px;">"Cho đến ngày chúng ta gặp lại."</p>
-                    <p class="quote-en" style="font-size: 16px; letter-spacing: 1px;">"Until we meet again."</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Control HUD -->
-        <div id="hud-controls" style="opacity: 0.3;">
-            <button class="hud-btn" onclick="prevSlide()">❮ Trước</button>
-            <span id="timeline-indicator">00:00</span>
-            <button class="hud-btn" onclick="nextSlide()">Sau ❯</button>
-            <button class="hud-btn" id="play-pause-btn" onclick="togglePause()">Tạm Dừng</button>
-        </div>
-    </div>
-
-    <!-- YouTube IFrame API Script Connection -->
     <script>
-        var tag = document.createElement('script');
-        tag.src = "https://www.youtube.com/iframe_api";
-        var firstScriptTag = document.getElementsByTagName('script')[0];
-        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+        // CẤU HÌNH THỜI GIAN CHẠY ẢNH (Tính bằng mili-giây)
+        // 2500ms = 2.5 giây per ảnh (Đã tăng tốc độ chạy nhanh hơn theo yêu cầu)
+        const DISPLAY_DURATION = 2500; 
 
-        // Player placeholders using specific URLs provided
-        var pOpening, pMiddle, pClose;
-        var apiReady = false;
-
-        function onYouTubeIframeAPIReady() {
-            // Player 1: Opening (https://www.youtube.com/watch?v=imGaOIm5HOk)
-            pOpening = new YT.Player('player-opening', {
-                videoId: 'imGaOIm5HOk',
-                playerVars: { 'autoplay': 0, 'controls': 0, 'loop': 1, 'playlist': 'imGaOIm5HOk' },
-                events: { 'onReady': checkPlayersReady }
-            });
-
-            // Player 2: Middle (https://www.youtube.com/watch?v=7maJOI3QMu0)
-            pMiddle = new YT.Player('player-middle', {
-                videoId: '7maJOI3QMu0',
-                playerVars: { 'autoplay': 0, 'controls': 0, 'loop': 1, 'playlist': '7maJOI3QMu0' },
-                events: { 'onReady': checkPlayersReady }
-            });
-
-            // Player 3: Close (https://www.youtube.com/watch?v=rtOvBOTyX00)
-            pClose = new YT.Player('player-close', {
-                videoId: 'rtOvBOTyX00',
-                playerVars: { 'autoplay': 0, 'controls': 0, 'loop': 1, 'playlist': 'rtOvBOTyX00' },
-                events: { 'onReady': checkPlayersReady }
-            });
-        }
-
-        var readyCount = 0;
-        function checkPlayersReady() {
-            readyCount++;
-            if(readyCount === 3) {
-                apiReady = true;
-                console.log("All requested YouTube tracks loaded successfully.");
-            }
-        }
-
-        // Slideshow System States
-        var slides = document.querySelectorAll('.slide');
-        var currentIdx = 0;
-        var totalElapsedSeconds = 0;
-        var globalTimeInterval = null;
-        var isPaused = false;
-        var slideDurations = [];
-        var slideStartTimes = [];
-
-        // Build precise time offsets for each slide
-        var accum = 0;
-        slides.forEach(function(s, idx) {
-            var d = parseInt(s.getAttribute('data-duration'));
-            slideDurations.push(d);
-            slideStartTimes.push(accum);
-            accum += d;
-        });
-
-        function startSlideshow() {
-            if(!apiReady) {
-                alert("Đang kết nối âm thanh với YouTube, vui lòng đợi vài giây rồi bấm lại.");
-                return;
-            }
-            document.getElementById('start-splash').style.display = 'none';
-            document.getElementById('hud-controls').style.opacity = '0.3';
+        // DANH SÁCH SẮP XẾP TOÀN BỘ 38 HÌNH ẢNH THEO ĐÚNG MẠCH BỐ CỤC YÊU CẦU
+        const imageList = [
+            { src: "phuc_44.jpg", caption: "" }, // Ảnh mở đầu
             
-            // Start Audio Engine
-            pOpening.setVolume(100);
-            pOpening.playVideo();
+            // Khối 1: Từ phuc_1 đến phuc_14
+            { src: "phuc_1.jpg", caption: "" }, { src: "phuc_2.jpg", caption: "" },
+            { src: "phuc_3.jpg", caption: "" }, { src: "phuc_4.jpg", caption: "" },
+            { src: "phuc_5.jpg", caption: "" }, { src: "phuc_6.jpg", caption: "" },
+            { src: "phuc_7.jpg", caption: "" }, { src: "phuc_8.jpg", caption: "" },
+            { src: "phuc_9.jpg", caption: "" }, { src: "phuc_10.jpg", caption: "" },
+            { src: "phuc_11.jpg", caption: "" }, { src: "phuc_12.jpg", caption: "" },
+            { src: "phuc_13.jpg", caption: "" }, { src: "phuc_14.jpg", caption: "" },
             
-            pMiddle.setVolume(0);
-            pMiddle.playVideo();
-            pMiddle.pauseVideo();
+            // Khối 2: Từ phuc_15 đến phuc_24
+            { src: "phuc_15.jpg", caption: "" }, { src: "phuc_16.jpg", caption: "" },
+            { src: "phuc_17.jpg", caption: "" }, { src: "phuc_18.jpg", caption: "" },
+            { src: "phuc_19.jpg", caption: "" }, { src: "phuc_20.jpg", caption: "" },
+            { src: "phuc_21_2.jpg", caption: "" }, { src: "phuc_22.jpg", caption: "" },
+            { src: "phuc_23.jpg", caption: "" }, { src: "phuc_24.jpg", caption: "" },
             
-            pClose.setVolume(0);
-            pClose.playVideo();
-            pClose.pauseVideo();
+            // Khối 3: Từ phuc_25 đến phuc_37 (có bỏ qua một số số không có trong danh sách gốc của bạn)
+            { src: "phuc_25.jpg", caption: "" }, { src: "phuc_26.jpg", caption: "" },
+            { src: "phuc_27.jpg", caption: "" }, { src: "phuc_28.jpg", caption: "" },
+            { src: "phuc_29.jpg", caption: "" }, { src: "phuc_30.jpg", caption: "" },
+            { src: "phuc_34.jpg", caption: "" }, { src: "phuc_35.jpg", caption: "" },
+            { src: "phuc_36_2.jpg", caption: "" }, { src: "phuc_37.jpg", caption: "" },
+            
+            // Khối 4: Các ảnh kỷ niệm còn lại
+            { src: "phuc_38.jpg", caption: "" }, { src: "phuc_39.jpg", caption: "" },
+            { src: "phuc_40.jpg", caption: "" }, { src: "phuc_41.jpg", caption: "" },
+            { src: "phuc_42.jpg", caption: "" }, { src: "phuc_43.jpg", caption: "" },
+            
+            { src: "phuc_45.jpg", caption: "" }  // Ảnh kết thúc
+        ];
 
-            runTimeline();
-        }
+        const container = document.getElementById('slideshow');
+        let currentSlideIndex = 0;
+        let slideInterval;
+        let isPaused = false;
 
-        function runTimeline() {
-            globalTimeInterval = setInterval(function() {
-                if(!isPaused) {
-                    totalElapsedSeconds++;
-                    updateHUD();
-                    manageAudioMixing(totalElapsedSeconds);
-                    
-                    // Check if current slide should advance
-                    var nextSlideTriggerTime = slideStartTimes[currentIdx] + slideDurations[currentIdx];
-                    if(totalElapsedSeconds >= nextSlideTriggerTime) {
-                        if(currentIdx < slides.length - 1) {
-                            goToSlide(currentIdx + 1);
-                        } else {
-                            clearInterval(globalTimeInterval);
-                            fadeOutAllAudio();
-                        }
-                    }
+        // Khởi tạo và tạo cấu trúc HTML cho các Slide ảnh
+        function initSlideshow() {
+            imageList.forEach((imgData, index) => {
+                const slideDiv = document.createElement('div');
+                slideDiv.className = `slide ${index === 0 ? 'active' : ''}`;
+                
+                const img = document.createElement('img');
+                img.src = imgData.src;
+                img.alt = `Slide ${index + 1}`;
+                // Xử lý lỗi nếu thiếu file ảnh trong thư mục để tránh màn hình trống
+                img.onerror = function() {
+                    this.style.display = 'none';
+                    slideDiv.innerHTML = `<div style="color:rgba(255,255,255,0.3); font-size:1.5rem;">[Không tìm thấy file ${imgData.src}]</div>`;
+                };
+                
+                slideDiv.appendChild(img);
+
+                // Nếu bạn muốn chèn thêm chữ chạy ở dưới ảnh nào, chỉ cần điền vào phần 'caption' ở trên mảng danh sách
+                if (imgData.caption) {
+                    const captionDiv = document.createElement('div');
+                    captionDiv.className = 'caption';
+                    captionDiv.innerText = imgData.caption;
+                    slideDiv.appendChild(captionDiv);
                 }
-            }, 1000);
+
+                container.appendChild(slideDiv);
+            });
+
+            startInterval();
         }
 
-        function goToSlide(idx) {
-            slides[currentIdx].classList.remove('active');
-            currentIdx = idx;
-            slides[currentIdx].classList.add('active');
-            updateHUD();
-        }
-
-        function updateHUD() {
-            var mins = Math.floor(totalElapsedSeconds / 60);
-            var secs = totalElapsedSeconds % 60;
-            document.getElementById('timeline-indicator').innerText = 
-                (mins < 10 ? '0' + mins : mins) + ':' + (secs < 10 ? '0' + secs : secs);
-        }
-
-        function manageAudioMixing(elapsed) {
-            // PART 1 -> PART 2 CROSSFADE (Around 2:00 / 120s)
-            if (elapsed >= 110 && elapsed < 120) {
-                var progress = (elapsed - 110) / 10;
-                pOpening.setVolume(Math.floor((1 - progress) * 100));
-                if (pMiddle.getPlayerState() !== 1) { pMiddle.playVideo(); }
-                pMiddle.setVolume(Math.floor(progress * 100));
-            }
-            else if (elapsed === 120) {
-                pOpening.pauseVideo();
-                pMiddle.setVolume(100);
-            }
-
-            // PART 2 -> PART 3 VOLUME DROP FOR MOTHER'S SLIDE (Around 6:00 / 360s)
-            if (elapsed >= 355 && elapsed < 360) {
-                var progress = (elapsed - 355) / 5;
-                pMiddle.setVolume(Math.floor(100 - (progress * 70)));
-            }
-            else if (elapsed === 360) {
-                pMiddle.setVolume(30);
-            }
-
-            // PART 3 -> PART 4 CROSSFADE (Around 7:00 / 420s)
-            if (elapsed >= 410 && elapsed < 420) {
-                var progress = (elapsed - 410) / 10;
-                pMiddle.setVolume(Math.floor((1 - progress) * 30));
-                if (pClose.getPlayerState() !== 1) { pClose.playVideo(); }
-                pClose.setVolume(Math.floor(progress * 100));
-            }
-            else if (elapsed === 420) {
-                pMiddle.pauseVideo();
-                pClose.setVolume(100);
-            }
-        }
-
-        function togglePause() {
-            isPaused = !isPaused;
-            var btn = document.getElementById('play-pause-btn');
-            if(isPaused) {
-                btn.innerText = "Tiếp Tục";
-                if(totalElapsedSeconds < 120) pOpening.pauseVideo();
-                else if(totalElapsedSeconds >= 120 && totalElapsedSeconds < 420) pMiddle.pauseVideo();
-                else pClose.pauseVideo();
-            } else {
-                btn.innerText = "Tạm Dừng";
-                if(totalElapsedSeconds < 120) pOpening.playVideo();
-                else if(totalElapsedSeconds >= 120 && totalElapsedSeconds < 420) pMiddle.playVideo();
-                else pClose.playVideo();
-            }
-        }
-
+        // Hàm điều khiển chuyển slide tiếp theo
         function nextSlide() {
-            if(currentIdx < slides.length - 1) {
-                var nextIdx = currentIdx + 1;
-                totalElapsedSeconds = slideStartTimes[nextIdx];
-                syncAudioDirectlyForTime(totalElapsedSeconds);
-                goToSlide(nextIdx);
-            }
+            const slides = document.querySelectorAll('.slide');
+            slides[currentSlideIndex].removeClass; // Xóa active cũ
+            slides[currentSlideIndex].classList.remove('active');
+            
+            currentSlideIndex = (currentSlideIndex + 1) % slides.length;
+            
+            slides[currentSlideIndex].classList.add('active');
         }
 
-        function prevSlide() {
-            if(currentIdx > 0) {
-                var prevIdx = currentIdx - 1;
-                totalElapsedSeconds = slideStartTimes[prevIdx];
-                syncAudioDirectlyForTime(totalElapsedSeconds);
-                goToSlide(prevIdx);
-            }
+        function startInterval() {
+            slideInterval = setInterval(nextSlide, DISPLAY_DURATION);
         }
 
-        function syncAudioDirectlyForTime(seconds) {
-            if(seconds < 120) {
-                pOpening.playVideo(); pOpening.setVolume(100); pOpening.seekTo(seconds, true);
-                pMiddle.pauseVideo(); pClose.pauseVideo();
-            } else if(seconds >= 120 && seconds < 360) {
-                pOpening.pauseVideo();
-                pMiddle.playVideo(); pMiddle.setVolume(100); pMiddle.seekTo(seconds - 120, true);
-                pClose.pauseVideo();
-            } else if(seconds >= 360 && seconds < 420) {
-                pOpening.pauseVideo();
-                pMiddle.playVideo(); pMiddle.setVolume(30); pMiddle.seekTo(seconds - 120, true);
-                pClose.pauseVideo();
+        // Tính năng phụ: Bấm nút để Tạm dừng / Tiếp tục chạy nếu cần xem kỹ ảnh nào
+        function togglePause() {
+            const btn = document.getElementById('btnPause');
+            if (isPaused) {
+                startInterval();
+                btn.innerText = "Tạm dừng";
+                isPaused = false;
             } else {
-                pOpening.pauseVideo(); pMiddle.pauseVideo();
-                pClose.playVideo(); pClose.setVolume(100); pClose.seekTo(seconds - 420, true);
+                clearInterval(slideInterval);
+                btn.innerText = "Tiếp tục chạy";
+                isPaused = true;
             }
-            updateHUD();
         }
 
-        function fadeOutAllAudio() {
-            var vol = 100;
-            var fadeInterval = setInterval(function() {
-                vol -= 5;
-                if(vol <= 0) {
-                    clearInterval(fadeInterval);
-                    pOpening.pauseVideo(); pMiddle.pauseVideo(); pClose.pauseVideo();
-                } else {
-                    pClose.setVolume(vol);
-                }
-            }, 200);
-        }
-
-        // Hide mouse controls when idle for clean viewing
-        var hud = document.getElementById('hud-controls');
-        var idleTimer;
-        document.onmousemove = function() {
-            hud.style.opacity = "0.9";
-            clearTimeout(idleTimer);
-            idleTimer = setTimeout(function() {
-                if(!isPaused) hud.style.opacity = "0";
-            }, 3000);
-        };
+        // Chạy trình chiếu khi trang đã tải xong
+        window.onload = initSlideshow;
     </script>
 </body>
 </html>
